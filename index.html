@@ -1,0 +1,157 @@
+<!-- vim: set ts=4 sw=4 tw=4 et : -->
+<html>
+    <head>
+        <style>
+            td {
+                width: 50%;
+            }
+            .unlit, .lit {
+                border-radius: 1em;
+                text-align: center;
+            }
+            .lit {
+                background: yellow;
+            }
+            .unlit {
+                background: lightgray;
+            }
+
+            .flag {
+                background: lightgrey;
+                border: 2px solid black;
+            }
+            .white {
+                background: white;
+            }
+            .black {
+                background: black;
+            }
+
+            .info {
+                text-align: center;
+            }
+        </style>
+        <script src='http://code.jquery.com/jquery-2.1.4.min.js'> </script>
+        <script src='http://code.jquery.com/ui/1.11.4/jquery-ui.min.js'> </script>
+        <link rel='stylesheet' href='http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css' />
+    </head>
+    <body>
+        <table style='float: left;'><tbody>
+            <tr><th id='sa'>0</th><th id='sb'>0</th></tr>
+            <tr><th>Player</th><th>Computer</th></tr>
+            <tr><td class='lit' id='a80'>80-99</td><td class='lit' id='b80'>80-99</td></tr>
+            <tr><td class='lit' id='a60'>60-79</td><td class='lit' id='b60'>60-79</td></tr>
+            <tr><td class='lit' id='a40'>40-59</td><td class='lit' id='b40'>40-59</td></tr>
+            <tr><td class='lit' id='a20'>20-39</td><td class='lit' id='b20'>20-39</td></tr>
+            <tr><td class='lit'>00-19</td><td class='lit'>00-19</td></tr>
+            <tr><td class='flag' id='aflag'>&nbsp;</td><td class='flag' id='bflag'>&nbsp;</td></tr>
+        </tbody></table>
+        <div style='width: 400px;'>
+            <div class='info'><h3 id='round'>Round 1</h3></div>
+            <div class='info'><input id='wager' /></div>
+            <div class='info'><button id='submit'>Submit!</button></div>
+            <div class='spacer'>&nbsp;</div>
+            <div id='options'>
+                <h3>Options</h3>
+                <div>
+                    <span>Difficulty:</span>
+                    <div id='difficulty'>
+                        <input type='radio' id='easy' /><label for='easy'>Easy</label>
+                        <input type='radio' id='hard' /><label for='hard'>Hard</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type='text/javascript'>
+            var pa = 99;
+            var wa = 0;
+            var pb = 99;
+            var wb = 0;
+            var human = (Math.random() > 0.5); // Random starting player
+            var aiPlayed = false;
+            var round = 1;
+
+            const evaluate = function() {
+                if (wa > wb) var toInc = $('#sa');
+                else if (wb > wa) var toInc = $('#sb');
+                else var toInc = $('<th>0</th>');
+                const current = parseInt(toInc.text());
+                toInc.text(current + 1);
+
+                if (round == 9) {
+                    if ($('#sa').text() > $('#sb').text()) var w = 'Player';
+                    else if ($('#sa').text() < $('#sb').text()) var w = 'Computer';
+                    else var w = 'Nobody';
+                    $('#submit').button('disable').button('option','label',w + ' Wins!');
+                }
+                wa = wb = 0;
+            }
+            const setFlag = function(wager, flag) {
+                if (wager < 10) flag.addClass('white');
+                else flag.addClass('black');
+            }
+            const aiPlay = function() {
+                wb = Math.random() * pb;
+                setFlag(wb, $('#bflag'));
+                pb = pb - wb;
+                if (pb < 80) $('#b80').addClass('unlit');
+                if (pb < 60) $('#b60').addClass('unlit');
+                if (pb < 40) $('#b40').addClass('unlit');
+                if (pb < 20) $('#b20').addClass('unlit');
+
+                aiPlayed = true;
+                if (human) evaluate();
+            }
+            const cont = function() {
+                $('.flag').removeClass('white black');
+                $('#wager').spinner('value', '0');
+                $(this).button('option', 'label', 'Submit!').off('click').click(submit);
+                round = round + 1;
+                $('#round').text('Round ' + round);
+                aiPlayed = false;
+
+                if (!human) {
+                    aiPlay();
+                    human = true;
+                }
+            }
+            const submit = function() {
+                wa = $('#wager').spinner('value');
+                setFlag(wa, $('#aflag'));
+                pa = pa - wa;
+                if (pa < 80) $('#a80').addClass('unlit');
+                if (pa < 60) $('#a60').addClass('unlit');
+                if (pa < 40) $('#a40').addClass('unlit');
+                if (pa < 20) $('#a20').addClass('unlit');
+                $('#wager').spinner('option', 'max', pa);
+                $(this).button('option', 'label', 'Continue...').off('click').click(cont);
+
+                if (aiPlayed) {
+                    evaluate();
+                } else {
+                    aiPlay();
+                    human = false;
+                }
+            }
+
+            $(function() {
+                $('#wager').spinner({
+                    min: 0,
+                    max: 99,
+                    step: 1,
+                    page: 10
+                });
+                $('#submit').button({
+                    disabled: false,
+                    label: 'Submit!'
+                }).click(submit);
+                $('#options').accordion({
+                    collapsible: true,
+                    heightStyle: 'content'
+                }).hide();
+                $('#difficulty').buttonset();
+                if (!human) aiPlay();
+            });
+        </script>
+    </body>
+</html>
