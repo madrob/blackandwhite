@@ -23,8 +23,13 @@ function aiRecord() {
     easy.record();
 }
 function evaluate() {
-	if (wa > wb) increment($('#sa'));
-	else if (wb > wa) increment($('#sb'));
+	if (wa > wb) {
+        increment($('#sa'));
+        human = true;
+    } else if (wb > wa) {
+        increment($('#sb'));
+        human = false;
+    } // else { human = human; } // same player starts
 
 	if ($('#round').text() == '9') {
 		if ($('#sa').text() > $('#sb').text()) var w = 'Player';
@@ -49,7 +54,9 @@ function aiPlay() {
 	if (pb < 40) $('#b40').addClass('unlit');
 	if (pb < 20) $('#b20').addClass('unlit');
 
-	if (human) evaluate();
+	if ($('#aflag').hasClass('black') || $('#aflag').hasClass('white')) {
+	    evaluate();
+    }
 }
 function cont() {
 	$('.flag').removeClass('white black');
@@ -59,7 +66,6 @@ function cont() {
 
 	if (!human) {
 		aiPlay();
-		human = true;
 	}
 }
 function submit() {
@@ -77,7 +83,6 @@ function submit() {
 		evaluate();
 	} else {
 		aiPlay();
-		human = false;
 	}
 }
 
@@ -98,8 +103,7 @@ $(function() {
         active: false
     });
     $('#difficulty').buttonset();
-    if (!human) {
-        aiPlay();
-        human = true;
-    }
+	if (!human) {
+		aiPlay();
+	}
 });
