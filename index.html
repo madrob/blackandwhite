@@ -45,7 +45,7 @@
             <tr><td class='lit'>00-19</td><td class='lit'>00-19</td></tr>
             <tr><td class='flag' id='aflag'>&nbsp;</td><td class='flag' id='bflag'>&nbsp;</td></tr>
         </tbody></table>
-        <div style='width: 400px;'>
+        <div style='width: 300px; float: left;'>
             <div class='info'><h3 id='round'>Round 1</h3></div>
             <div class='info'><input id='wager' /></div>
             <div class='info'><button id='submit'>Submit!</button></div>
@@ -55,8 +55,8 @@
                 <div>
                     <span>Difficulty:</span>
                     <div id='difficulty'>
-                        <input type='radio' id='easy' /><label for='easy'>Easy</label>
-                        <input type='radio' id='hard' /><label for='hard'>Hard</label>
+                        <input type='radio' id='easy' name='difficulty' checked="checked"/><label for='easy'>Easy</label>
+                        <input type='radio' id='hard' name='difficulty' /><label for='hard'>Hard</label>
                     </div>
                 </div>
             </div>
@@ -70,6 +70,7 @@
             var aiPlayed = false;
             var round = 1;
 
+            const aiRecord = function() { }
             const evaluate = function() {
                 if (wa > wb) var toInc = $('#sa');
                 else if (wb > wa) var toInc = $('#sb');
@@ -83,7 +84,9 @@
                     else var w = 'Nobody';
                     $('#submit').button('disable').button('option','label',w + ' Wins!');
                 }
+
                 wa = wb = 0;
+                aiRecord();
             }
             const setFlag = function(wager, flag) {
                 if (wager < 10) flag.addClass('white');
@@ -146,8 +149,9 @@
                 }).click(submit);
                 $('#options').accordion({
                     collapsible: true,
-                    heightStyle: 'content'
-                }).hide();
+                    heightStyle: 'content',
+                    active: false
+                });
                 $('#difficulty').buttonset();
                 if (!human) aiPlay();
             });
