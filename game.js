@@ -6,12 +6,22 @@ var pb = 99;
 var wb = 0;
 var human = (Math.random() > 0.5); // Random starting player
 
+var easy = {
+    play: function() {
+        return Math.random() * pb;
+    },
+    record: function() {
+    }
+}
+
 function increment(what) {
 	const current = parseInt(what.text());
 	what.text(current + 1);
 }
 
-function aiRecord() { }
+function aiRecord() {
+    easy.record();
+}
 function evaluate() {
 	if (wa > wb) increment($('#sa'));
 	else if (wb > wa) increment($('#sb'));
@@ -31,7 +41,7 @@ function setFlag(wager, flag) {
 	else flag.addClass('black');
 }
 function aiPlay() {
-	wb = Math.random() * pb;
+	wb = easy.play();
 	setFlag(wb, $('#bflag'));
 	pb = pb - wb;
 	if (pb < 80) $('#b80').addClass('unlit');
