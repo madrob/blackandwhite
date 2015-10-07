@@ -91,5 +91,8 @@ heightStyle: 'content',
 active: false
 });
 		$('#difficulty').buttonset();
-		if (!human) aiPlay();
+		if (!human) {
+            aiPlay();
+            human = true;
+        }
 		});
