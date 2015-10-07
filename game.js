@@ -1,19 +1,32 @@
 /* vim: set ts=4 sw=4 tw=4 et : */
 
-var pa = 99;
-var wa = 0;
-var pb = 99;
-var wb = 0;
-var human = (Math.random() > 0.5); // Random starting player
+function newState() {
+    return {
+        pa: 99,
+        wa: 0,
+        pb: 99,
+        wb: 0,
+        human: (Math.random() > 0.5) // Random starting player
+    }
+}
+var state = newState();
 
 var easy = {
     play: function() {
-        return Math.random() * pb;
+        return Math.random() * state.pb;
     },
     record: function() {
     }
 }
 
+function restart() {
+    state = newState();
+    $('.unlit').removeClass('unlit');
+	$('.flag').removeClass('white black');
+	$('#wager').spinner('value', 0).spinner('option', 'max', 99);
+    $('#sa, #sb').text('0');
+    $('#round').text('1');
+}
 function increment(what) {
 	const current = parseInt(what.text());
 	what.text(current + 1);
@@ -23,12 +36,12 @@ function aiRecord() {
     easy.record();
 }
 function evaluate() {
-	if (wa > wb) {
+	if (state.wa > state.wb) {
         increment($('#sa'));
-        human = true;
-    } else if (wb > wa) {
+        state.human = true;
+    } else if (state.wb > state.wa) {
         increment($('#sb'));
-        human = false;
+        state.human = false;
     } // else { human = human; } // same player starts
 
 	if ($('#round').text() == '9') {
@@ -38,7 +51,7 @@ function evaluate() {
 		$('#submit').button('disable').button('option','label',w + ' Wins!');
 	}
 
-	wa = wb = 0;
+	state.wa = state.wb = 0;
 	aiRecord();
 }
 function setFlag(wager, flag) {
@@ -46,13 +59,13 @@ function setFlag(wager, flag) {
 	else flag.addClass('black');
 }
 function aiPlay() {
-	wb = easy.play();
-	setFlag(wb, $('#bflag'));
-	pb = pb - wb;
-	if (pb < 80) $('#b80').addClass('unlit');
-	if (pb < 60) $('#b60').addClass('unlit');
-	if (pb < 40) $('#b40').addClass('unlit');
-	if (pb < 20) $('#b20').addClass('unlit');
+	state.wb = easy.play();
+	setFlag(state.wb, $('#bflag'));
+	state.pb = state.pb - state.wb;
+	if (state.pb < 80) $('#b80').addClass('unlit');
+	if (state.pb < 60) $('#b60').addClass('unlit');
+	if (state.pb < 40) $('#b40').addClass('unlit');
+	if (state.pb < 20) $('#b20').addClass('unlit');
 
 	if ($('#aflag').hasClass('black') || $('#aflag').hasClass('white')) {
 	    evaluate();
@@ -60,23 +73,23 @@ function aiPlay() {
 }
 function cont() {
 	$('.flag').removeClass('white black');
-	$('#wager').spinner('value', '0');
+	$('#wager').spinner('value', 0);
 	$(this).button('option', 'label', 'Submit!').off('click').click(submit);
 	increment($('#round'));
 
-	if (!human) {
+	if (!state.human) {
 		aiPlay();
 	}
 }
 function submit() {
-	wa = $('#wager').spinner('value');
-	setFlag(wa, $('#aflag'));
-	pa = pa - wa;
-	if (pa < 80) $('#a80').addClass('unlit');
-	if (pa < 60) $('#a60').addClass('unlit');
-	if (pa < 40) $('#a40').addClass('unlit');
-	if (pa < 20) $('#a20').addClass('unlit');
-	$('#wager').spinner('option', 'max', pa);
+	state.wa = $('#wager').spinner('value');
+	setFlag(state.wa, $('#aflag'));
+	state.pa = state.pa - state.wa;
+	if (state.pa < 80) $('#a80').addClass('unlit');
+	if (state.pa < 60) $('#a60').addClass('unlit');
+	if (state.pa < 40) $('#a40').addClass('unlit');
+	if (state.pa < 20) $('#a20').addClass('unlit');
+	$('#wager').spinner('option', 'max', state.pa);
 	$(this).button('option', 'label', 'Continue...').off('click').click(cont);
 
 	if ($('#bflag').hasClass('black') || $('#bflag').hasClass('white')) {
@@ -97,13 +110,16 @@ $(function() {
         disabled: false,
         label: 'Submit!'
     }).click(submit);
+    $('#restart').button({
+        disabled: false
+    }).click(restart);
     $('#options').accordion({
         collapsible: true,
         heightStyle: 'content',
         active: false
     });
     $('#difficulty').buttonset();
-	if (!human) {
+	if (!state.human) {
 		aiPlay();
 	}
 });
