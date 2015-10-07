@@ -8,8 +8,8 @@ var human = (Math.random() > 0.5); // Random starting player
 var aiPlayed = false;
 var round = 1;
 
-const aiRecord = function() { }
-const evaluate = function() {
+function aiRecord() { }
+function evaluate() {
 	if (wa > wb) var toInc = $('#sa');
 	else if (wb > wa) var toInc = $('#sb');
 	else var toInc = $('<th>0</th>');
@@ -26,11 +26,11 @@ const evaluate = function() {
 	wa = wb = 0;
 	aiRecord();
 }
-const setFlag = function(wager, flag) {
+function setFlag(wager, flag) {
 	if (wager < 10) flag.addClass('white');
 	else flag.addClass('black');
 }
-const aiPlay = function() {
+function aiPlay() {
 	wb = Math.random() * pb;
 	setFlag(wb, $('#bflag'));
 	pb = pb - wb;
@@ -42,7 +42,7 @@ const aiPlay = function() {
 	aiPlayed = true;
 	if (human) evaluate();
 }
-const cont = function() {
+function cont() {
 	$('.flag').removeClass('white black');
 	$('#wager').spinner('value', '0');
 	$(this).button('option', 'label', 'Submit!').off('click').click(submit);
@@ -55,7 +55,7 @@ const cont = function() {
 		human = true;
 	}
 }
-const submit = function() {
+function submit() {
 	wa = $('#wager').spinner('value');
 	setFlag(wa, $('#aflag'));
 	pa = pa - wa;
@@ -75,24 +75,24 @@ const submit = function() {
 }
 
 $(function() {
-		$('#wager').spinner({
-min: 0,
-max: 99,
-step: 1,
-page: 10
+    $('#wager').spinner({
+        min: 0,
+        max: 99,
+        step: 1,
+        page: 10
+    });
+    $('#submit').button({
+        disabled: false,
+        label: 'Submit!'
+    }).click(submit);
+    $('#options').accordion({
+        collapsible: true,
+        heightStyle: 'content',
+        active: false
+    });
+    $('#difficulty').buttonset();
+    if (!human) {
+        aiPlay();
+        human = true;
+    }
 });
-		$('#submit').button({
-disabled: false,
-label: 'Submit!'
-}).click(submit);
-		$('#options').accordion({
-collapsible: true,
-heightStyle: 'content',
-active: false
-});
-		$('#difficulty').buttonset();
-		if (!human) {
-            aiPlay();
-            human = true;
-        }
-		});
