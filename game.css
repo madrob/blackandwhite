@@ -1,0 +1,27 @@
+td {
+    width: 50%;
+}
+.unlit, .lit {
+    border-radius: 1em;
+    text-align: center;
+}
+.lit {
+    background: yellow;
+}
+.unlit {
+    background: lightgray;
+}
+.flag {
+    background: lightgrey;
+    border: 2px solid black;
+}
+.white {
+    background: white;
+}
+.black {
+    background: black;
+}
+.info {
+    text-align: center;
+}
+
